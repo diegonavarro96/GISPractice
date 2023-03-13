@@ -1,37 +1,59 @@
 var map;
+
 require([
   "esri/map",
+  "esri/geometry/Extent",
   "esri/layers/FeatureLayer",
+  "esri/symbols/SimpleLineSymbol",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/TextSymbol",
-  "esri/Color",
-  "esri/symbols/Font",
   "esri/renderers/SimpleRenderer",
-  "dojo/domReady!",
-], function (Map, FeatureLayer, SimpleFillSymbol,TextSymbol,Color,Font,SimpleRenderer) {
-  map = new Map(
-    "map",
-    {
-      basemap: "topo-vector", //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
-      center: [-100, 40], // longitude, latitude
-      zoom: 5,
-      showLabels: true 
-    }
-  );
-  var featureLayerOptions = {
-    mode: FeatureLayer.MODE_AUTO,
-    opacity: 0.5,
+  "esri/layers/LabelClass",
+  "dojo/_base/Color",
+], function (
+  Map,
+  Extent,
+  FeatureLayer,
+  SimpleLineSymbol,
+  SimpleFillSymbol,
+  TextSymbol,
+  SimpleRenderer,
+  LabelClass,
+  Color
+) {
+  // load the map centered on the United States
+  var bbox = new Extent({
+    xmin: -1940058,
+    ymin: -814715,
+    xmax: 1683105,
+    ymax: 1446096,
+    spatialReference: { wkid: 102003 },
+  });
+  map = new Map("map", {
+    extent: bbox,
+    showLabels: true, //very important that this must be set to true!
+  });
+  var json = {
+    "labelExpressionInfo": {"value": "{STATE_NAME}"}
   };
-  var symbol = new SimpleFillSymbol().setColor(new Color([255, 0, 0]));
-  var rend = new SimpleRenderer(symbol); 
-  //FeatureLayer.setRenderer(renderer);
-  var layer = new FeatureLayer(
-    "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2",
-    featureLayerOptions,
-     { outFields: ["state_name"] }
-);
+  var statesLabel = new TextSymbol().setColor(statesColor);
+  statesLabel.font.setSize("14pt");
+  statesLabel.font.setFamily("arial");
+  //create instance of LabelClass (note: multiple LabelClasses can also be passed in as an array)
+  var labelClass = new LabelClass(json);
+  labelClass.symbol = statesLabel; // symbol also can be set in LabelClass' json
 
-//create instance of LabelClass
-  layer.renderer = rend;
-  map.addLayer(layer);
+  var labelField = "STATE_NAME";
+
+  // create a renderer for the states layer to override default symbology
+  var statesColor = new Color("#666");
+  // create a feature layer to show country boundaries
+  var statesUrl =
+    "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3";
+  var states = new FeatureLayer(statesUrl, {
+    id: "STATE",
+    outFields: ["*"],
+  });
+  states.setLabelingInfo([ labelClass ]);
+  map.addLayer(states);
 });
