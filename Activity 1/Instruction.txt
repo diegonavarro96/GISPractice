@@ -1,0 +1,17 @@
+1:
+
+First add a map service layer from sample layer 6
+
+Set transparency 
+
+Add Labels (this is a property of layer)
+
+2:
+
+Same service add each layer independently
+
+Add simple renderer for each layer
+
+3:
+
+Use first or independent layer to  "ON Click" alert what is the name of polygon
