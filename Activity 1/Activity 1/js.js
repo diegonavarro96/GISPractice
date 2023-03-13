@@ -43,17 +43,20 @@ require([
   var labelClass = new LabelClass(json);
   labelClass.symbol = statesLabel; // symbol also can be set in LabelClass' json
 
-  var labelField = "STATE_NAME";
+ // var labelField = "STATE_NAME";
 
   // create a renderer for the states layer to override default symbology
   var statesColor = new Color("#666");
   // create a feature layer to show country boundaries
   var statesUrl =
     "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3";
+    var symbol = new SimpleFillSymbol().setColor(new Color([255, 0, 0,0.5]));
+    var rend = new SimpleRenderer(symbol);
   var states = new FeatureLayer(statesUrl, {
     id: "STATE",
     outFields: ["*"],
   });
   states.setLabelingInfo([ labelClass ]);
+  states.renderer = rend;
   map.addLayer(states);
 });
