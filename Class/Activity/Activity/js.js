@@ -1,7 +1,6 @@
 var map;
 function _rowOnCLick(evt){
-  debugger;
-  alert("click on row")
+
 }
 
 // function _rowOnCLick(evt) {
@@ -100,7 +99,7 @@ require([
         tableConst +
         "<tr value='" +
         map.getLayer("STATE").graphics[i].attributes["OBJECTID"] +
-        "' onclick='_rowOnCLick(" + "this"+
+        "' onclick='_rowOnCLick(" + map.getLayer("STATE").graphics[i].attributes["OBJECTID"]+
         ")'>";
         //map.getLayer("STATE").graphics[i].attributes["OBJECTID"] + map.getLayer("STATE") +
       for (let j = 0; j < Object.keys(map.getLayer("STATE").graphics[0].attributes).length; j++) {
@@ -111,6 +110,16 @@ require([
       tableConst = tableConst + "</tr>";
     }
     document.getElementById("attributeTable").innerHTML = tableConst;
+
+
+    var query = new Query();
+    query.geometry = map.getLayer("STATE").graphics[2].geometry;
+    states.selectFeatures(query,FeatureLayer.SELECTION_NEW);
+
+    states.on("selection-complete", function (evt){
+      debugger;
+    })
+
 
     states.on("click", function (evt) {
       var rows = document.getElementsByTagName("tr");
