@@ -32,6 +32,8 @@ html, body{
   th {
     background-color: #04AA6D;
     color: white;
+    position: sticky;
+    top: 0;
   }
   
   tr:hover {

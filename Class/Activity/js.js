@@ -14,6 +14,7 @@ function _rowOnCLick(evt){
       );
       for(let i=0;i<=map.getLayer("STATE").graphics.length;i++){
         if(map.getLayer("STATE").graphics[i].attributes["OBJECTID"]===evt){
+          debugger;
           var graphic = new Graphic(map.getLayer("STATE").graphics[i].geometry,sfs,null,null);
           map.graphics.add(graphic);
           map.setExtent(graphic._extent,true);
