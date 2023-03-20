@@ -1,7 +1,4 @@
 var map;
-function _rowOnCLick(evt){
-
-}
 
 // function _rowOnCLick(evt) {
 //   map.graphics.clear();
@@ -51,6 +48,7 @@ require([
   "esri/tasks/QueryTask",
   "esri/tasks/query",
   "esri/graphic",
+  "esri/InfoTemplate",
   "dojo/domReady!"
 ], function (
   Map,
@@ -64,7 +62,8 @@ require([
   Color,
   QueryTask,
   Query,
-  Graphic
+  Graphic,
+  InfoTemplate
 ) {
   // load the map centered on the United States
   var bbox = new Extent({
@@ -82,10 +81,13 @@ require([
     "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3";
   var symbol = new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5]));
   var rend = new SimpleRenderer(symbol);
+  var selectionSymbol = new SimpleFillSymbol().setColor(new Color([0,255,0,1]));
+  var infoTemplate = new InfoTemplate("${name}", "${*}");
   var states = new FeatureLayer(statesUrl, {
     id: "STATE",
-    outFields: ["OBJECTID","STATE_NAME","SUB_REGION", "POP2000", "POP2007"],
+    outFields: ["OBJECTID","STATE_NAME","SUB_REGION", "POP2000", "POP2007"]
   });
+  states.setSelectionSymbol=selectionSymbol;
   let tableConst = "";
   states.renderer = rend;
   map.addLayer(states);
@@ -111,16 +113,6 @@ require([
     }
     document.getElementById("attributeTable").innerHTML = tableConst;
 
-
-    var query = new Query();
-    query.geometry = map.getLayer("STATE").graphics[2].geometry;
-    states.selectFeatures(query,FeatureLayer.SELECTION_NEW);
-
-    states.on("selection-complete", function (evt){
-      debugger;
-    })
-
-
     states.on("click", function (evt) {
       var rows = document.getElementsByTagName("tr");
       rows[evt.graphic.attributes.OBJECTID].classList.toggle("highlighted-row");
@@ -128,3 +120,29 @@ require([
   });
 
 });
+
+ function _rowOnCLick(evt){
+  //debugger
+  require([
+    "esri/tasks/query",
+    "esri/layers/FeatureLayer"
+  ],
+  function (Query, FeatureLayer ){
+ // map.graphics.clear();
+  // for (let i = 0; i <= map.getLayer("STATE").graphics.length; i++) {
+          // if (map.getLayer("STATE").graphics[i].attributes["OBJECTID"] === evt) {
+            var query = new Query();
+            query.where="OBJECTID="+evt.toString();
+            //query.geometry = map.getLayer("STATE").geometry;
+            map.getLayer("STATE").selectFeatures(query,FeatureLayer.SELECTION_NEW,function(evt){
+              debugger;
+            });
+            map.getLayer("STATE").redraw();
+            debugger;
+         
+            map.getLayer("STATE").refresh();
+            // break;
+          // }
+        // }
+      });
+}
